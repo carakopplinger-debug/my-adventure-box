@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎁 Mystery Adventure Box</title>
+    <style>
+        /* ────────────── reset & base ────────────── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at 50% 20%, #1a1a2e, #0f0f1a);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* ────────────── main container ────────────── */
+        .app {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 40px 32px 48px;
+            max-width: 680px;
+            width: 100%;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .title span {
+            background: linear-gradient(135deg, #f7971e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .sub {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        /* ────────────── mystery box ────────────── */
+        .box-wrapper {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin-bottom: 28px;
+            transition: transform 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .box-wrapper:hover {
+            transform: scale(1.02);
+        }
+        .box-wrapper:active {
+            transform: scale(0.96);
+        }
+
+        .box {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(145deg, #2d2d44, #1a1a2e);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            user-select: none;
+        }
+
+        .box .lid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(160deg, #3a3a55, #22223a);
+            border-radius: 24px 24px 0 0;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.08);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform-origin: top center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            color: rgba(255, 215, 0, 0.3);
+            pointer-events: none;
+        }
+        .box.open .lid {
+            transform: rotateX(-120deg) translateY(-10px);
+        }
+
+        .box .content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.3s;
+            pointer-events: none;
+        }
+        .box.open .content {
+            opacity: 1;
+        }
+
+        .box .content .adv-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffd700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            line-height: 1.2;
+        }
+        .box .content .adv-desc {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 6px;
+            max-width: 160px;
+            line-height: 1.4;
+        }
+        .box .content .adv-icon {
+            font-size: 2.2rem;
+            margin-bottom: 2px;
+        }
+
+        .box.open {
+            box-shadow: 0 0 60px rgba(255, 215, 0, 0.15), 0 12px 40px rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 215, 0, 0.2);
+        }
+
+        .box .shimmer {
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            background: linear-gradient(135deg, transparent 30%, rgba(255, 215, 0, 0.03) 50%, transparent 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s;
+        }
+        .box.open .shimmer {
+            opacity: 1;
+        }
+
+        /* ────────────── result area ────────────── */
+        .result-area {
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+            padding: 0 8px;
+        }
+        .result-area .placeholder {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .result-area .name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease 0.2s;
+        }
+        .result-area .name.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result-area .desc {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.55);
+            max-width: 400px;
+            line-height: 1.5;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease 0.35s;
+        }
+        .result-area .desc.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result-area .color-bar {
+            width: 60px;
+            height: 3px;
+            border-radius: 4px;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: background 0.6s ease, box-shadow 0.6s ease;
+        }
+        .result-area .color-bar.active {
+            background: #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+        }
+
+        /* ────────────── buttons ────────────── */
+        .btn-spin {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #1a1a2e;
+            background: linear-gradient(135deg, #f7971e, #ffd700);
+            box-shadow: 0 8px 30px rgba(247, 151, 30, 0.25);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .btn-spin:hover {
+            transform: scale(1.04);
+            box-shadow: 0 12px 40px rgba(247, 151, 30, 0.4);
+        }
+        .btn-spin:active {
+            transform: scale(0.96);
+        }
+        .btn-spin:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-spin svg {
+            width: 22px;
+            height: 22px;
+            fill: none;
+            stroke: #1a1a2e;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.6s ease;
+        }
+        .btn-spin:not(:disabled):hover svg {
+            transform: rotate(180deg);
+        }
+
+        /* ────────────── add adventure form ────────────── */
+        .add-section {
+            margin-top: 32px;
+            padding-top: 28px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .add-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.5);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+        }
+        .add-toggle:hover {
+            border-color: rgba(255, 215, 0, 0.2);
+            color: #fff;
+            background: rgba(255, 215, 0, 0.04);
+        }
+        .add-toggle .icon {
+            font-size: 1.2rem;
+            transition: transform 0.4s ease;
+        }
+        .add-toggle.open .icon {
+            transform: rotate(45deg);
+        }
+
+        .add-form {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease, margin 0.4s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+        .add-form.open {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 20px;
+        }
+
+        .add-form-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 22px 24px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .add-form-inner .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .add-form label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-bottom: 4px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .add-form input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border 0.2s ease;
+            outline: none;
+        }
+        .add-form input:focus {
+            border-color: rgba(255, 215, 0, 0.25);
+        }
+        .add-form input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .add-form .color-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .add-form .color-row input[type="color"] {
+            width: 44px;
+            height: 44px;
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .add-form .color-row input[type="text"] {
+            flex: 1;
+        }
+
+        .add-form .btn-add {
+            grid-column: 1 / -1;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #f7971e, #ffd700);
+            color: #1a1a2e;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 4px;
+        }
+        .add-form .btn-add:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(247, 151, 30, 0.2);
+        }
+        .add-form .btn-add:active {
+            transform: scale(0.97);
+        }
+
+        .add-feedback {
+            grid-column: 1 / -1;
+            font-size: 0.85rem;
+            color: #4CAF50;
+            min-height: 24px;
+            transition: 0.3s;
+        }
+        .add-feedback.error {
+            color: #ef5350;
+        }
+
+        .add-form .count-badge {
+            grid-column: 1 / -1;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.2);
+            text-align: center;
+            margin-top: -6px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ────────────── confetti canvas ────────────── */
+        #confettiCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* ────────────── responsive ────────────── */
+        @media (max-width: 540px) {
+            .app {
+                padding: 24px 16px 32px;
+                border-radius: 32px;
+            }
+            .title {
+                font-size: 1.5rem;
+            }
+            .box {
+                width: 160px;
+                height: 160px;
+                font-size: 3.6rem;
+            }
+            .box .content .adv-name {
+                font-size: 1rem;
+            }
+            .box .content .adv-desc {
+                font-size: 0.65rem;
+                max-width: 120px;
+            }
+            .result-area .name {
+                font-size: 1.4rem;
+            }
+            .result-area .desc {
+                font-size: 0.9rem;
+            }
+            .btn-spin {
+                padding: 12px 28px;
+                font-size: 0.85rem;
+            }
+            .add-form-inner {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 16px;
+            }
+            .add-form-inner .full-width {
+                grid-column: 1;
+            }
+            .add-form .color-row {
+                flex-wrap: wrap;
+            }
+        }
+        @media (max-width: 380px) {
+            .box {
+                width: 130px;
+                height: 130px;
+                font-size: 3rem;
+            }
+            .box .content .adv-name {
+                font-size: 0.85rem;
+            }
+            .box .content .adv-desc {
+                font-size: 0.55rem;
+                max-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── MAIN APP ─── -->
+    <div class="app">
+        <div class="title">🎁 <span>Mystery Box</span></div>
+        <div class="sub">tap the box · claim your adventure</div>
+
+        <!-- box -->
+        <div class="box-wrapper" id="boxWrapper" role="button" tabindex="0" aria-label="Open the mystery box">
+            <div class="box" id="box">
+                <div class="lid"><span>❓</span></div>
+                <div class="shimmer"></div>
+                <div class="content" id="boxContent">
+                    <div class="adv-icon" id="boxIcon">🌿</div>
+                    <div class="adv-name" id="boxName">Adventure</div>
+                    <div class="adv-desc" id="boxDesc">Ready to go</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- result -->
+        <div class="result-area">
+            <div class="placeholder" id="placeholder">⬇ tap the box above ⬇</div>
+            <div class="name" id="resultName"></div>
+            <div class="desc" id="resultDesc"></div>
+            <div class="color-bar" id="colorBar"></div>
+        </div>
+
+        <!-- buttons -->
+        <button class="btn-spin" id="spinBtn">
+            <svg viewBox="0 0 24 24">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                <polyline points="21 3 21 9 15 9"/>
+            </svg>
+            New Adventure
+        </button>
+
+        <!-- ─── ADD ADVENTURE ─── -->
+        <div class="add-section">
+            <button class="add-toggle" id="addToggle">
+                <span class="icon">＋</span>
+                Add your own adventure
+            </button>
+
+            <div class="add-form" id="addForm">
+                <div class="add-form-inner">
+                    <div class="full-width">
+                        <label for="advName">Adventure name</label>
+                        <input type="text" id="advName" placeholder="e.g. Rooftop Sunset" maxlength="30" />
+                    </div>
+                    <div class="full-width">
+                        <label for="advDesc">Short description</label>
+                        <input type="text" id="advDesc" placeholder="e.g. Watch the sunset from a city rooftop with a drink in hand" maxlength="80" />
+                    </div>
+                    <div>
+                        <label for="advIcon">Icon</label>
+                        <input type="text" id="advIcon" placeholder="🌅" maxlength="4" style="text-align:center;font-size:1.3rem;" />
+                    </div>
+                    <div>
+                        <label for="advColor">Color</label>
+                        <div class="color-row">
+                            <input type="color" id="advColor" value="#FF6B6B" />
+                            <input type="text" id="advColorHex" placeholder="#FF6B6B" maxlength="7" />
+                        </div>
+                    </div>
+                    <div class="add-feedback" id="addFeedback"></div>
+                    <button class="btn-add" id="addBtn">➕ Add Adventure</button>
+                    <div class="count-badge" id="countBadge">12 adventures available</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── CONFETTI ─── -->
+    <canvas id="confettiCanvas"></canvas>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  ADVENTURES (default set)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const DEFAULT_ADVENTURES = [{
+            name: 'Park Picnic',
+            desc: 'Pack a light lunch, grab a blanket, and enjoy a lazy afternoon under the trees.',
+            icon: '🧺',
+            color: '#4CAF50'
+        }, {
+            name: 'Cafe Crawl',
+            desc: 'Visit three coffee shops, taste their signature drinks, and find your new favourite spot.',
+            icon: '☕',
+            color: '#8D6E63'
+        }, {
+            name: 'Museum Quest',
+            desc: 'Explore a museum — follow your curiosity through history, art, or science exhibits.',
+            icon: '🏛️',
+            color: '#5C6BC0'
+        }, {
+            name: 'Gallery Hop',
+            desc: 'Stroll through local galleries, discover emerging artists, and find a piece that inspires you.',
+            icon: '🎨',
+            color: '#AB47BC'
+        }, {
+            name: 'Garden Retreat',
+            desc: 'Wander through botanical gardens, breathe in the scents, and sketch or photograph the beauty.',
+            icon: '🌷',
+            color: '#66BB6A'
+        }, {
+            name: 'Market Feast',
+            desc: 'Explore a food market, sample local specialities, and pick up fresh ingredients for dinner.',
+            icon: '🍇',
+            color: '#FFA726'
+        }, {
+            name: 'Library Afternoon',
+            desc: 'Browse the shelves, discover a new author, and lose yourself in a quiet reading nook.',
+            icon: '📚',
+            color: '#78909C'
+        }, {
+            name: 'Cinema Matinee',
+            desc: 'Watch an indie or classic film — grab popcorn and enjoy a story on the big screen.',
+            icon: '🎬',
+            color: '#EF5350'
+        }, {
+            name: 'Creative Studio',
+            desc: 'Visit a maker space, try your hand at pottery, painting, or screen printing.',
+            icon: '🖌️',
+            color: '#EC407A'
+        }, {
+            name: 'Urban Explorer',
+            desc: 'Walk through a vibrant neighbourhood, discover street art, hidden alleys, and local gems.',
+            icon: '🏙️',
+            color: '#26C6DA'
+        }, {
+            name: 'Nature Trail',
+            desc: 'Take a short hike — enjoy the views, fresh air, and a moment of stillness in nature.',
+            icon: '🌲',
+            color: '#2E7D32'
+        }, {
+            name: 'Retro Hunt',
+            desc: 'Browse vintage and thrift stores, hunting for unique treasures and nostalgic finds.',
+            icon: '🕰️',
+            color: '#FF7043'
+        }];
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        let adventures = [...DEFAULT_ADVENTURES];
+        let isOpen = false;
+        let isAnimating = false;
+        let currentAdventure = null;
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  DOM REFS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const box = document.getElementById('box');
+        const boxWrapper = document.getElementById('boxWrapper');
+        const boxIcon = document.getElementById('boxIcon');
+        const boxName = document.getElementById('boxName');
+        const boxDesc = document.getElementById('boxDesc');
+        const placeholder = document.getElementById('placeholder');
+        const resultName = document.getElementById('resultName');
+        const resultDesc = document.getElementById('resultDesc');
+        const colorBar = document.getElementById('colorBar');
+        const spinBtn = document.getElementById('spinBtn');
+
+        // add form
+        const addToggle = document.getElementById('addToggle');
+        const addForm = document.getElementById('addForm');
+        const advName = document.getElementById('advName');
+        const advDesc = document.getElementById('advDesc');
+        const advIcon = document.getElementById('advIcon');
+        const advColor = document.getElementById('advColor');
+        const advColorHex = document.getElementById('advColorHex');
+        const addBtn = document.getElementById('addBtn');
+        const addFeedback = document.getElementById('addFeedback');
+        const countBadge = document.getElementById('countBadge');
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  HELPERS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function updateCountBadge() {
+            const count = adventures.length;
+            countBadge.textContent = `${count} adventure${count !== 1 ? 's' : ''} available`;
+        }
+
+        function pickAdventure() {
+            const idx = Math.floor(Math.random() * adventures.length);
+            return adventures[idx];
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  OPEN / GENERATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function openBox() {
+            if (isAnimating) return;
+            if (adventures.length === 0) {
+                // fallback: if somehow empty, re-add defaults
+                adventures = [...DEFAULT_ADVENTURES];
+                updateCountBadge();
+            }
+            if (isOpen) {
+                generateNew();
+                return;
+            }
+
+            isAnimating = true;
+            isOpen = true;
+
+            const adv = pickAdventure();
+            currentAdventure = adv;
+
+            boxIcon.textContent = adv.icon || '🌟';
+            boxName.textContent = adv.name;
+            boxDesc.textContent = adv.desc;
+
+            box.classList.add('open');
+
+            setTimeout(() => {
+                placeholder.style.display = 'none';
+                resultName.textContent = adv.name;
+                resultName.className = 'name show';
+                resultDesc.textContent = adv.desc;
+                resultDesc.className = 'desc show';
+                colorBar.style.background = adv.color || '#ffd700';
+                colorBar.style.boxShadow = `0 0 40px ${adv.color || '#ffd700'}44`;
+                colorBar.className = 'color-bar active';
+                launchConfetti();
+                isAnimating = false;
+            }, 650);
+
+            spinBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                        <polyline points="21 3 21 9 15 9"/>
+                    </svg>
+                    New Adventure
+                `;
+        }
+
+        function generateNew() {
+            if (isAnimating) return;
+            if (adventures.length === 0) {
+                adventures = [...DEFAULT_ADVENTURES];
+                updateCountBadge();
+            }
+
+            box.classList.remove('open');
+            resultName.className = 'name';
+            resultDesc.className = 'desc';
+            colorBar.className = 'color-bar';
+
+            setTimeout(() => {
+                const adv = pickAdventure();
+                currentAdventure = adv;
+
+                boxIcon.textContent = adv.icon || '🌟';
+                boxName.textContent = adv.name;
+                boxDesc.textContent = adv.desc;
+
+                box.classList.add('open');
+
+                setTimeout(() => {
+                    placeholder.style.display = 'none';
+                    resultName.textContent = adv.name;
+                    resultName.className = 'name show';
+                    resultDesc.textContent = adv.desc;
+                    resultDesc.className = 'desc show';
+                    colorBar.style.background = adv.color || '#ffd700';
+                    colorBar.style.boxShadow = `0 0 40px ${adv.color || '#ffd700'}44`;
+                    colorBar.className = 'color-bar active';
+                    launchConfetti();
+                    isAnimating = false;
+                }, 600);
+
+                spinBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                            <polyline points="21 3 21 9 15 9"/>
+                        </svg>
+                        New Adventure
+                    `;
+            }, 400);
+
+            isAnimating = true;
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  ADD ADVENTURE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        function addAdventure() {
+            const name = advName.value.trim();
+            const desc = advDesc.value.trim();
+            const icon = advIcon.value.trim() || '🌟';
+            const color = advColorHex.value.trim() || advColor.value;
+
+            if (!name) {
+                addFeedback.textContent = '⚠️ Please enter a name for your adventure.';
+                addFeedback.className = 'add-feedback error';
+                advName.focus();
+                return;
+            }
+            if (!desc) {
+                addFeedback.textContent = '⚠️ Please enter a short description.';
+                addFeedback.className = 'add-feedback error';
+                advDesc.focus();
+                return;
+            }
+
+            // validate color
+            const hexPattern = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i;
+            let finalColor = color;
+            if (!hexPattern.test(color)) {
+                finalColor = '#ffd700';
+            }
+
+            const newAdv = {
+                name: name,
+                desc: desc,
+                icon: icon,
+                color: finalColor
+            };
+
+            adventures.push(newAdv);
+            updateCountBadge();
+
+            // clear form
+            advName.value = '';
+            advDesc.value = '';
+            advIcon.value = '';
+            advColorHex.value = '';
+            advColor.value = '#FF6B6B';
+
+            addFeedback.textContent = '✅ Adventure added! Tap the box to find it.';
+            addFeedback.className = 'add-feedback';
+
+            // if box is open, close it so user can discover the new one
+            if (isOpen && !isAnimating) {
+                box.classList.remove('open');
+                resultName.className = 'name';
+                resultDesc.className = 'desc';
+                colorBar.className = 'color-bar';
+                placeholder.style.display = 'block';
+                isOpen = false;
+                spinBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                            <polyline points="21 3 21 9 15 9"/>
+                        </svg>
+                        New Adventure
+                    `;
+            }
+
+            // auto-collapse form after a moment
+            setTimeout(() => {
+                if (addForm.classList.contains('open')) {
+                    addToggle.classList.remove('open');
+                    addForm.classList.remove('open');
+                }
+            }, 3000);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  CONFETTI
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        const confettiCanvas = document.getElementById('confettiCanvas');
+        const cctx = confettiCanvas.getContext('2d');
+        let confettiPieces = [];
+        let confettiAnimId = null;
+
+        function resizeConfetti() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeConfetti);
+        resizeConfetti();
+
+        class ConfettiPiece {
+            constructor() {
+                this.x = Math.random() * confettiCanvas.width;
+                this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+                this.w = 5 + Math.random() * 8;
+                this.h = 3 + Math.random() * 5;
+                this.color = `hsl(${Math.random() * 360}, 85%, 60%)`;
+                this.vx = (Math.random() - 0.5) * 2.5;
+                this.vy = 1.5 + Math.random() * 4;
+                this.rot = Math.random() * 360;
+                this.rotSpeed = (Math.random() - 0.5) * 10;
+                this.life = 1;
+                this.decay = 0.002 + Math.random() * 0.005;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.05;
+                this.rot += this.rotSpeed;
+                this.life -= this.decay;
+                this.vx *= 0.999;
+            }
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate((this.rot * Math.PI) / 180);
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 8;
+                ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+                ctx.restore();
+            }
+        }
+
+        function launchConfetti() {
+            if (confettiAnimId) {
+                cancelAnimationFrame(confettiAnimId);
+                confettiAnimId = null;
+            }
+            confettiPieces = [];
+            const count = 120 + Math.floor(Math.random() * 100);
+            for (let i = 0; i < count; i++) {
+                confettiPieces.push(new ConfettiPiece());
+            }
+            animateConfetti();
+        }
+
+        function animateConfetti() {
+            cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            let alive = false;
+            for (const p of confettiPieces) {
+                p.update();
+                if (p.life > 0) {
+                    p.draw(cctx);
+                    alive = true;
+                }
+            }
+            if (alive) {
+                confettiAnimId = requestAnimationFrame(animateConfetti);
+            } else {
+                cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                confettiAnimId = null;
+            }
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  EVENTS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        boxWrapper.addEventListener('click', openBox);
+        boxWrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openBox();
+            }
+        });
+
+        spinBtn.addEventListener('click', () => {
+            if (isOpen) {
+                generateNew();
+            } else {
+                openBox();
+            }
+        });
+
+        // ── add form toggle ──
+        addToggle.addEventListener('click', () => {
+            addToggle.classList.toggle('open');
+            addForm.classList.toggle('open');
+            if (addForm.classList.contains('open')) {
+                advName.focus();
+            }
+        });
+
+        // ── color sync ──
+        advColor.addEventListener('input', () => {
+            advColorHex.value = advColor.value;
+        });
+        advColorHex.addEventListener('input', () => {
+            const val = advColorHex.value.trim();
+            if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(val)) {
+                advColor.value = val;
+            }
+        });
+
+        // ── add button ──
+        addBtn.addEventListener('click', addAdventure);
+
+        // Enter key on form fields
+        [advName, advDesc, advIcon, advColorHex].forEach(field => {
+            field.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addAdventure();
+                }
+            });
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        //  INIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        updateCountBadge();
+
+        const firstAdv = pickAdventure();
+        boxIcon.textContent = firstAdv.icon || '🌟';
+        boxName.textContent = firstAdv.name;
+        boxDesc.textContent = firstAdv.desc;
+
+        const placeholders = ['⬇ tap the box above ⬇', '🎁 what will you find?', '✨ your adventure awaits', '🎲 give it a tap'];
+        let phIndex = 0;
+        setInterval(() => {
+            if (!isOpen) {
+                phIndex = (phIndex + 1) % placeholders.length;
+                placeholder.textContent = placeholders[phIndex];
+            }
+        }, 3000);
+
+        setTimeout(() => launchConfetti(), 400);
+
+        console.log('🎁 Mystery Box ready! Tap the box to reveal your micro-adventure.');
+        console.log(`📦 ${adventures.length} adventures loaded — add your own using the form below.`);
+    </script>
+</body>
+</html>
